@@ -1,7 +1,30 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html>
+<head>
+    <title>Create Asset</title>
+</head>
 <body>
-    <p>Create Asset</p>
+    <h1>Create Asset</h1>
+    <div id="asset_created">
+        <br>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+             {{ message }}
+          {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <br>
+        </div>
+    <form method="POST" action="{{ url_for('create_asset') }}">
+        <input type="text" name="name" placeholder="Asset Name">
+        <br>
+        <textarea name="description" placeholder="Asset Description"></textarea>
+        <br>
+        <button type="submit">Create Asset</button>
+    </form>
+    <a href="{{ url_for('assets', user_id=current_user.user_id) }}" class="navbar-item">
+        Back to Assets
+    </a>
 </body>
 </html>

@@ -1,0 +1,41 @@
+
+
+/*
+
+    Select
+        element - div, h1, span
+        class - .menu-item, 
+        id - #login-button 
+
+        .nav {
+            font: blue
+        }
+
+        .selected {
+            font: red
+        }
+
+        class - you can give an element multiple classes
+        e.g. <a href="..." class="nav selected">
+
+    Style
+
+ */
+
+ body{
+    background-color: pink;
+ }
+
+.navbar-end {
+    background-color: white;
+    margin: 10px;
+    padding: 30px
+}
+
+.navbar-item {
+ margin-left: 20px;
+ box-shadow: 10;
+ box-shadow: 10px 5px 5px lightgray;
+ border-radius: 20%;
+ padding: 20px;
+}

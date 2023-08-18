@@ -1,7 +1,18 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html>
+<head>
+    <title>Edit Asset</title>
+</head>
 <body>
-    <p>Edit Asset</p>
+    <h1>Edit Asset</h1>
+    <form method="POST" action="/edit_asset/">
+        <input type="text" name="new_asset_name" value="{{ asset['name']}}" placeholder="New Asset Name">
+        <br>
+        <textarea name="new_asset_description" value="{{ asset['description'] }}" placeholder="New Asset Description"></textarea>
+        <br>
+        <button type="submit">Update Asset</button>
+    </form>
+    <br>
+    <a href="{{url_for('assets')}}">Back to Dashboard</a>
 </body>
 </html>
