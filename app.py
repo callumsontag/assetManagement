@@ -19,7 +19,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 load_dotenv()
@@ -107,7 +107,7 @@ def login():
 
         # if the above check passes, then we know the user has the right credentials
         login_user(user)
-        return redirect(url_for('assets'))
+        return redirect(url_for('assets', user_id=current_user.user_id))
     return render_template('login.html')
 
 
@@ -144,9 +144,9 @@ def edit_asset(user_id, asset_id):
         if request.method == "POST":
             asset.name = request.form["new_asset_name"]
             asset.description = request.form["new_asset_description"]
+
             db.session.commit()
-            return
-        redirect(url_for('assets', user_id=user_id))
+            return redirect(url_for('assets', user_id=user_id))
     else:
         return "User or asset not found"
     return render_template("edit_asset.html", user=user, asset=asset)
@@ -155,29 +155,32 @@ def edit_asset(user_id, asset_id):
 @app.route("/assets/<int:user_id>")
 @login_required
 def assets(user_id):
-
     user = User.query.get(user_id)
+
     if user:
-        assets = user.assets
-        return render_template('assets.html', user=user, assets=assets)
+        if current_user.is_admin:
+            assets = Asset.query.all()
+            return render_template('assets.html', user=user, assets=assets)
+        else:
+            assets = user.assets
+            return render_template('assets.html', user=user, assets=assets)
     else:
         return "User not found"
 
 
-@app.route('/delete_asset/<int:asset_id>', methods=['POST'])
+@app.route("/delete_asset/<int:user_id>/<int:asset_id>", methods=["GET", "POST"])
 @login_required
-def delete_asset(asset_id):
-    # if current_user.is_admin:
-    #     conn = sqlite3.connect('assetManagementDatabase.db')
-    #     cursor = conn.cursor()
-    #     # Your code to delete the asset from the database
-    #     cursor.execute('DELETE FROM assets WHERE asset_id = ?', (asset_id,))
-    #     conn.commit()
-    #     conn.close()
-    #     return redirect(url_for('assets'))
-    # else:
-    #     return "Access denied"  # Only admins can delete assets
-    return render_template('assets.html')
+def delete_asset(user_id, asset_id):
+    user = User.query.get(user_id)
+    asset = Asset.query.get(asset_id)
+
+    if user and asset and current_user.is_admin:
+        db.session.delete(asset)
+        db.session.commit()
+        return redirect(url_for('assets', user_id=user_id))
+    else:
+        # Only admins can delete assets
+        return "Access denied, only admins can delete assets"
 
 
 @app.route("/logout")
