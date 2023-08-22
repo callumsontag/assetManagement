@@ -2,19 +2,21 @@
 <html>
 <head>
     <title>Edit Asset</title>
+    <link rel="stylesheet" href="/static/edit_asset.css">
 </head>
 <body>
-    <h1>Edit Asset</h1>
+    <div class="container">
+    <div class="title">Edit Asset</div>
     <form method="POST", action="{{ url_for('edit_asset', user_id=user.user_id, asset_id=asset.asset_id)}}">
-        <div> Current Asset Name:  {{ asset['name'] }}</div>
-        <input type="text" name="new_asset_name" placeholder="New Asset Name">
+        <input type="text" name="new_asset_name" placeholder="New Asset Name" value={{ asset['name'] }}>
         <br>
-        <div> Current Asset Description:  {{ asset['description'] }}</div>
-        <textarea name="new_asset_description" placeholder="New Asset Description"></textarea>
+        <textarea name="new_asset_description" placeholder="New Asset Description">{{ asset['description'] }}</textarea>
         <br>
         <button type="submit">Update Asset</button>
     </form>
     <br>
-    <a href="{{ url_for('assets', user_id=current_user.user_id) }}">Back to Dashboard</a>
+    <a href="{{ url_for('assets', user_id=current_user.user_id) }}">Back to Assets</a>
+    </div>
+</div>
 </body>
 </html>

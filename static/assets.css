@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+body{
+    background: #FF788B;
+    text-align: center;
+    justify-content: center;
+    align-items:flex-start;
+    font-family: roboto;
+}
+
+table { 
+    background-color: #FFC9D1;
+	width: 1000px; 
+	margin:50px auto;
+    border-radius: 20px;
+    padding: 40px;
+    box-sizing: border-box;
+    background: #FFC9D1;
+    color: #171B1B;
+	}
+
+th{
+    border: solid white; 
+    border-radius: 20px;
+}
+
+td{
+    border: solid white;
+    border-radius: 20px;
+}

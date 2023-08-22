@@ -2,9 +2,11 @@
 <html>
 <head>
     <title>Create Asset</title>
+    <link rel="stylesheet" href="/static/create_asset.css">
 </head>
 <body>
-    <h1>Create Asset</h1>
+    <div class="container">
+    <div class="title">Create Asset</div>
     <div id="asset_created">
         <br>
         {% with messages = get_flashed_messages() %}
@@ -23,8 +25,10 @@
         <br>
         <button type="submit">Create Asset</button>
     </form>
+    <br>
     <a href="{{ url_for('assets', user_id=current_user.user_id) }}" class="navbar-item">
         Back to Assets
     </a>
+    </div>
 </body>
 </html>

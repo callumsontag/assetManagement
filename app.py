@@ -103,7 +103,7 @@ def login():
         if not user or not check_password_hash(user.password, password):
             flash('Please check your login details and try again.')
             # if the user doesn't exist or password is wrong, reload the page
-            return redirect(url_for('login', user_id=current_user.user_id))
+            return redirect(url_for('login'))
 
         # if the above check passes, then we know the user has the right credentials
         login_user(user)

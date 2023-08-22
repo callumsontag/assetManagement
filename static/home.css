@@ -1,41 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
+body{
+    background: #FF788B;
+    text-align: center;
+    justify-content: center;
+    align-items:flex-start;
+    font-family: roboto;
+}
 
-/*
+h1{
+    background: #FF788B;
+    text-align: center;
+    color: #171B1B;
+}
 
-    Select
-        element - div, h1, span
-        class - .menu-item, 
-        id - #login-button 
+img{
+    height: 10%;
+    width: 10%;
+}
 
-        .nav {
-            font: blue
-        }
-
-        .selected {
-            font: red
-        }
-
-        class - you can give an element multiple classes
-        e.g. <a href="..." class="nav selected">
-
-    Style
-
- */
-
- body{
-    background-color: pink;
- }
 
 .navbar-end {
-    background-color: white;
+    background-color: #FF788B;
     margin: 10px;
-    padding: 30px
+    position: relative;
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    place-items: center;
+    overflow: hidden;
+    
 }
 
 .navbar-item {
- margin-left: 20px;
- box-shadow: 10;
- box-shadow: 10px 5px 5px lightgray;
- border-radius: 20%;
- padding: 20px;
+    background-color: #FFC9D1;
+    margin-left: 20px;
+    box-shadow: 10;
+    box-shadow: 6px 6px 6px #cbced1, -6px -6px 6px white;
+    border-radius: 20%;
+    padding: 40px;
+    width: 5%;
+    height: 5%;
+    justify-content: center;
+    place-items: center;
+    text-decoration: none;
+    color: #171B1B;
 }
+
+.navbar-item:hover {
+    box-shadow: none;
+  }
+
+
