@@ -7,8 +7,8 @@
 <body>
     <div class="container">
     <div class="title">Edit Asset</div>
-    <form method="POST", action="{{ url_for('edit_asset', user_id=user.user_id, asset_id=asset.asset_id)}}">
-        <input type="text" name="new_asset_name" placeholder="New Asset Name" value={{ asset['name'] }}>
+    <form method="POST" action="{{ url_for('edit_asset', user_id=user.user_id, asset_id=asset.asset_id)}}">
+        <input type="text" name="new_asset_name" placeholder="New Asset Name" value="{{ asset['name'] }}">
         <br>
         <textarea name="new_asset_description" placeholder="New Asset Description">{{ asset['description'] }}</textarea>
         <br>

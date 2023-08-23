@@ -19,12 +19,39 @@ table {
     color: #171B1B;
 	}
 
+
 th{
     border: solid white; 
     border-radius: 20px;
+    background-color: #FF788B;
 }
 
 td{
     border: solid white;
     border-radius: 20px;
+}
+
+button {
+    color: #171B1B;
+    background: #FFC9D1;
+    height: 40px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 900;
+    box-shadow: 6px 6px 6px #cbced1, -6px -6px 6px white;
+    transition: 0.5s;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+  }
+  
+  button:hover {
+    box-shadow: none;
+  }
+
+.data-table td {
+    background-color: red !important;
 }

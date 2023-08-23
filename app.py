@@ -1,12 +1,9 @@
 from pathlib import Path
-import re
 import os
-import sqlite3
 import random
-from flask import Flask, flash, render_template, redirect, url_for, request, session
+from flask import Flask, flash, render_template, redirect, url_for, request
 from flask_login import LoginManager, login_required, current_user, UserMixin, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql import func
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
@@ -29,7 +26,7 @@ load_dotenv(dotenv_path=env_path)
 
 @login_manager.user_loader
 def load_user(user_id):
-    # since the user_id is just the primary key of our user table, use it in the query for the user
+    # user_id is the primary key of our user table, so is used in the query for the user
     return User.query.get(int(user_id))
 
 
@@ -70,12 +67,13 @@ def register():
         last_name = request.form['lastName']
         password = request.form['password']
         is_admin = False
-        user_id = ''.join(str(random.randint(0, 9)) for _ in range(10))
+        user_id = ''.join(str(random.randint(0, 9))
+                          for _ in range(10))  # randomly assigned 10 digit user id
 
         # if this returns a user, then the email already exists in database
         user = User.query.filter_by(email=email).first()
 
-        if user:  # if a user is found, we want to redirect back to signup page so user can try again
+        if user:  # if a user is found, this redirects user back to signup page so user can try again
             flash('Email address ia already in use')
             return redirect(url_for('register'))
 
@@ -92,23 +90,21 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # login code goes here
         email = request.form['email']
         password = request.form['password']
 
         user = User.query.filter_by(email=email).first()
 
-        # check if the user actually exists
         # take the user-supplied password, hash it, and compare it to the hashed password in the database
         if not user or not check_password_hash(user.password, password):
             flash('Please check your login details and try again.')
-            # if the user doesn't exist or password is wrong, reload the page
-            return redirect(url_for('login'))
+            # if the user doesn't exist or password is wrong, renders the page with the previously entered email
+            return render_template('login.html', email=email)
 
         # if the above check passes, then we know the user has the right credentials
         login_user(user)
         return redirect(url_for('assets', user_id=current_user.user_id))
-    return render_template('login.html')
+    return render_template('login.html', email="")
 
 
 @app.route('/home', methods=['GET', 'POST'])
@@ -120,6 +116,7 @@ def home():
 @login_required
 def create_asset():
     if request.method == 'POST':
+        # randomly assigned 10 digit asset id
         asset_id = ''.join(str(random.randint(0, 9)) for _ in range(10))
         name = request.form['name']
         description = request.form['description']
@@ -158,6 +155,7 @@ def assets(user_id):
     user = User.query.get(user_id)
 
     if user:
+        # if user is admin then return all user assets
         if current_user.is_admin:
             assets = Asset.query.all()
             return render_template('assets.html', user=user, assets=assets)

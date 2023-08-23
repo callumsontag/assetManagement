@@ -1,9 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-input {
-    caret-color:#171B1B;
-    margin-bottom: 10px;
-  }
   
 body {
     margin: 0;
@@ -74,6 +70,8 @@ input {
     font-size: 14px;
     border-radius: 50px;
     box-shadow: inset 6px 6px 6px #cbced1, inset -6px -6px 6px white;
+    caret-color:#171B1B;
+    margin-bottom: 10px;
   }
   
 button {

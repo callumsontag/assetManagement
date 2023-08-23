@@ -3,17 +3,20 @@
 <head>
     <title>Assets</title>
     <link rel="stylesheet" href="/static/assets.css">
+    <script src="/static/assets.js"></script>
 </head>
 <body>
     <h1>Asset List</h1>
     <h3>Welcome {{ current_user.first_name }}, these are your assets</h3>
-    <table>
+    <table class="assets-table">
         <tr>
             <th>Asset Name</th>
             <th>Asset Description</th>
             <th>Assigned User ID</th>
-            <th></th>
-
+            <th>Edit Asset</th>
+            {% if current_user.is_admin %}
+            <th>Delete Asset</th>
+            {% endif %}
         </tr>
         {% for asset in assets %}
         <tr>
@@ -22,10 +25,14 @@
             <td>{{ asset.user_id }}</td>
             <td>
                 <a href="{{ url_for('edit_asset', user_id=current_user.user_id, asset_id=asset.asset_id) }}">Edit Asset</a>
-                {% if current_user.is_admin %}
-                <a href="{{ url_for('delete_asset', user_id=user.user_id, asset_id=asset.asset_id) }}">Delete Asset</a>
-                {% endif %}
             </td>
+            {% if current_user.is_admin %}
+            <td>
+                <form method="POST" action="{{ url_for('delete_asset', user_id=user.user_id, asset_id=asset.asset_id) }}" class="deleteForm">
+                    <button>Delete</button>
+                </form>
+            </td>
+            {% endif %}
         </tr>
         {% endfor %}
     </table>
