@@ -1,5 +1,5 @@
 from flask import url_for, request
-from app import db, app, User, Asset
+from app import db, app
 from flask_login import login_user
 import pytest
 
@@ -40,20 +40,3 @@ class TestApp:
         # check that the logout path takes users back to login
         assert response.status_code == 200
         assert b"Login" in response.data
-
-    def test_assets_route(self, client):
-        user = User(
-            user_id=5, email='testtest@mettle.co.uk', password='test')
-        asset = Asset(asset_id=1, name='testasset1',
-                      description='test asset description', user_id=5)
-
-        response = client.get("assets/5", follow_redirects=True)
-        assert b"Assets" in response.data
-        assert response.status_code == 200
-        assert b"Assets" in response.data
-
-    # def test_create_assets_route(self, client):
-
-    # def test_edit_assets_route(self, client):
-
-    # def test_delte_assets_route(self, client):

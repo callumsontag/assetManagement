@@ -81,3 +81,7 @@ button:hover {
     box-shadow: none;
   }
 
+#registration_error {
+    color: red;
+  }
+

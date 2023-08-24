@@ -3,10 +3,9 @@ import os
 import random
 from flask import Flask, flash, render_template, redirect, url_for, request
 from flask_login import LoginManager, login_required, current_user, UserMixin, login_user, logout_user
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
-
+from flask_sqlalchemy import SQLAlchemy
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,9 +14,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
     'sqlite:///' + os.path.join(basedir, 'assetManagementDatabase.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
+
+db = SQLAlchemy(app)
 
 load_dotenv()
 env_path = Path('.')/'.env'
@@ -26,11 +28,8 @@ load_dotenv(dotenv_path=env_path)
 
 @login_manager.user_loader
 def load_user(user_id):
-    # user_id is the primary key of the user table, so is used in the query for the user
+    # user_id is the primary key of the user table, so is used in this query to load the user
     return User.query.get(int(user_id))
-
-
-db = SQLAlchemy(app)
 
 
 class User(UserMixin, db.Model):
@@ -101,10 +100,10 @@ def login():
         # take the user-supplied password, hash it, and compare it to the hashed password in the database
         if not user or not check_password_hash(user.password, password):
             flash('Please check your login details and try again.')
-            # if the user doesn't exist or password is wrong, renders the page with the previously entered email
+            # if the user doesn't exist or password is wrong, renders the page with the previously entered email stored in the form
             return render_template('login.html', email=email)
 
-        # if the above check passes, then we know the user has the right credentials
+        # if the above check passes, then we know the user has the right credentials and the user is taken to their assets page
         login_user(user)
         return redirect(url_for('assets', user_id=current_user.user_id))
     return render_template('login.html', email="")
@@ -124,19 +123,20 @@ def create_asset():
         name = request.form['name']
         description = request.form['description']
         user_id = current_user.get_id()
-
+        # adding a new asset to the asset database
         new_asset = Asset(asset_id=asset_id, name=name,
                           description=description, user_id=user_id)
 
         db.session.add(new_asset)
         db.session.commit()
-        flash('Asset created')
+        flash('Asset created!')
         print(new_asset)
     return render_template("create_asset.html")
 
 
 @app.route("/edit_asset/<int:user_id>/<int:asset_id>", methods=["GET", "POST"])
 def edit_asset(user_id, asset_id):
+    # takes the existing user id and asset id
     user = User.query.get(user_id)
     asset = Asset.query.get(asset_id)
 
@@ -144,7 +144,7 @@ def edit_asset(user_id, asset_id):
         if request.method == "POST":
             asset.name = request.form["new_asset_name"]
             asset.description = request.form["new_asset_description"]
-
+            # replaces the existing assets name and description
             db.session.commit()
             return redirect(url_for('assets', user_id=user_id))
     else:
@@ -162,6 +162,7 @@ def assets(user_id):
         if current_user.is_admin:
             assets = Asset.query.all()
             return render_template('assets.html', user=user, assets=assets)
+        # otherwise just return the current users assets
         else:
             assets = user.assets
             return render_template('assets.html', user=user, assets=assets)
@@ -175,12 +176,12 @@ def delete_asset(user_id, asset_id):
     user = User.query.get(user_id)
     asset = Asset.query.get(asset_id)
 
+    # checks that the user is an admin, as only admins can delete assets
     if user and asset and current_user.is_admin:
         db.session.delete(asset)
         db.session.commit()
         return redirect(url_for('assets', user_id=user_id))
     else:
-        # Only admins can delete assets
         return "Access denied, only admins can delete assets"
 
 

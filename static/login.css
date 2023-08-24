@@ -81,5 +81,9 @@ button {
 button:hover {
     box-shadow: none;
   }
+
+#login_error {
+  color: red;
+}
   
 

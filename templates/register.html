@@ -17,9 +17,9 @@
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <br>
-    <div id="registration_error">
+    <span id="registration_error">
         {{ messages[0] }}. Go to <a href="{{ url_for('login') }}">Login</a>.
-    </div>
+    </span>
     <br>
     {% endif %}
     {% endwith %}
