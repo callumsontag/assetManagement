@@ -26,7 +26,7 @@ load_dotenv(dotenv_path=env_path)
 
 @login_manager.user_loader
 def load_user(user_id):
-    # user_id is the primary key of our user table, so is used in the query for the user
+    # user_id is the primary key of the user table, so is used in the query for the user
     return User.query.get(int(user_id))
 
 
@@ -34,15 +34,17 @@ db = SQLAlchemy(app)
 
 
 class User(UserMixin, db.Model):
-    # primary keys are required by SQLAlchemy
     def get_id(self):
         return (self.user_id)
     user_id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    first_name = db.Column(db.String(1000))
-    last_name = db.Column(db.String(1000))
+    first_name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
     password = db.Column(db.String(100), nullable=False)
     is_admin = db.Column(db.Integer, default=0)
+    # assets doesn't direct show on the User table itself but it represents the relationship
+    # between the User and Assets Models, and allows the access
+    # of the related Asset records associated with a particular user
     assets = db.relationship('Asset', backref='user', lazy=True)
 
 
@@ -67,20 +69,21 @@ def register():
         last_name = request.form['lastName']
         password = request.form['password']
         is_admin = False
+        # user_id is randomly assigned a 10 digit user id
         user_id = ''.join(str(random.randint(0, 9))
-                          for _ in range(10))  # randomly assigned 10 digit user id
+                          for _ in range(10))
 
         # if this returns a user, then the email already exists in database
         user = User.query.filter_by(email=email).first()
 
-        if user:  # if a user is found, this redirects user back to signup page so user can try again
+        if user:  # if a user is found, this redirects user back to register page so user can try again
             flash('Email address ia already in use')
             return redirect(url_for('register'))
 
         new_user = User(email=email, first_name=first_name, last_name=last_name, is_admin=is_admin, user_id=user_id,
                         password=generate_password_hash(password, method='sha256'))
 
-        # add the new user to the database
+        # adds the new user to the database with a sha256 hashed password
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('login'))
