@@ -68,7 +68,7 @@ def register():
         first_name = request.form['firstName']
         last_name = request.form['lastName']
         password = request.form['password']
-        is_admin = True
+        is_admin = False
         # user_id is randomly assigned a 10 digit user id
         user_id = str(uuid.uuid4())
 
@@ -129,7 +129,7 @@ def create_asset():
 
         db.session.add(new_asset)
         db.session.commit()
-        flash('Asset created!')
+        flash('Asset created successfully!')
         print(new_asset)
     return render_template("create_asset.html")
 

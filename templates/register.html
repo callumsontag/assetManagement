@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Register</title>
-    <link rel="stylesheet" href="/static/register.css">
+    <link rel="stylesheet" href="/static/auth_form.css">
 </head>
 <body>
     <div class="container">
@@ -17,7 +17,7 @@
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <br>
-    <span id="registration_error">
+    <span id="error">
         {{ messages[0] }}. Go to <a href="{{ url_for('login') }}">Login</a>.
     </span>
     <br>

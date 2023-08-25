@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
   
 body {
     margin: 0;
@@ -26,18 +27,13 @@ body {
   }
   
   
-.title{
+.title {
     margin-top: 10px;
     margin-bottom: 10px;
     font-weight: 900;
     font-size: 1.4rem;
     color: #171B1B;
     letter-spacing: 1px;
-  }
-  
-.inputs {
-    text-align: left;
-    margin-top: 30px;
   }
   
 input, button {
@@ -81,7 +77,10 @@ button:hover {
     box-shadow: none;
   }
 
-#registration_error {
-    color: red;
-  }
+#error {
+  color: red;
+}
+
+
+  
 

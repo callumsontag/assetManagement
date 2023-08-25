@@ -28,34 +28,11 @@ body {
   
   
 .title{
-    margin-top: 10px;
-    margin-bottom: 10px;
+    padding: 10px;
     font-weight: 900;
     font-size: 1.4rem;
     color: #171B1B;
     letter-spacing: 1px;
-  }
-  
-.inputs {
-    text-align: left;
-    margin-top: 30px;
-  }
-  
-label, input, button {
-    display: block;
-    width: 100%;
-    padding: 0;
-    border: none;
-    outline: none;
-    box-sizing: border-box;
-  }
-  
-label {
-    margin-bottom: 4px;
-  }
-  
-label:nth-of-type(2) {
-    margin-top: 12px;
   }
   
 input::placeholder {
@@ -63,15 +40,20 @@ input::placeholder {
   }
   
 input {
+    display: block;
     background: #FFC9D1;
     padding: 10px;
     padding-left: 20px;
     height: 50px;
+    width: 100%;
     font-size: 14px;
     border-radius: 50px;
     box-shadow: inset 6px 6px 6px #cbced1, inset -6px -6px 6px white;
     caret-color:#171B1B;
     margin-bottom: 10px;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
   }
 
 textarea {
@@ -89,15 +71,21 @@ textarea {
   }
   
 button {
+    display: block;
     color: #171B1B;
     margin-top: 20px;
     background: #FFC9D1;
     height: 40px;
+    width: 100%;
     border-radius: 20px;
     cursor: pointer;
     font-weight: 900;
     box-shadow: 6px 6px 6px #cbced1, -6px -6px 6px white;
     transition: 0.5s;
+    padding: 0;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
   }
   
 button:hover {
@@ -106,4 +94,5 @@ button:hover {
 
 #asset_created {
   font-weight: bold;
+  border: 10px;
 }
