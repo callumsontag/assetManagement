@@ -8,9 +8,9 @@
     <div class="container">
     <div class="title">Edit Asset</div>
     <form method="POST" action="{{ url_for('edit_asset', user_id=user.user_id, asset_id=asset.asset_id)}}">
-        <input type="text" name="new_asset_name" placeholder="New Asset Name" value="{{ asset['name'] }}">
+        <input type="text" name="new_asset_name" placeholder="New Asset Name" value="{{ asset['name'] }}" maxlength="20" required>
         <br>
-        <textarea name="new_asset_description" placeholder="New Asset Description">{{ asset['description'] }}</textarea>
+        <textarea name="new_asset_description" placeholder="New Asset Description" maxlength="120" required>{{ asset['description'] }}</textarea>
         <br>
         <button type="submit">Update Asset</button>
     </form>

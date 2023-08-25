@@ -84,6 +84,8 @@ textarea {
     margin-bottom: 15px;
     font-family: roboto;
     box-shadow: inset 6px 6px 6px #cbced1, inset -6px -6px 6px white;
+    caret-color:#171B1B;
+    outline: none;
   }
   
 button {

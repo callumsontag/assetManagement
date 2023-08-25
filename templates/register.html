@@ -9,7 +9,7 @@
     <div class="title">Register</div>
     <form method="POST" action="{{ url_for('register') }}">
         <input type="email" name="email" placeholder="Email" title="Please register with mettle email address" pattern=".+@mettle\.co\.uk" required> <!-- must register with @mettle.co.uk email address -->
-        <input type="password" name="password" placeholder="Password" required>
+        <input type="password" name="password" placeholder="Password" minlength="6" required>
         <input name="firstName" placeholder="First Name" required>
         <input name="lastName" placeholder="Last Name" required>
         <button type="submit">Register</button>

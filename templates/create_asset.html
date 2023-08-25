@@ -20,9 +20,9 @@
         <br>
     </span>
     <form method="POST" action="{{ url_for('create_asset') }}">
-        <input type="text" name="name" placeholder="Asset Name">
+        <input type="text" name="name" placeholder="Asset Name" title="Asset name is required" maxlength="20" required>
         <br>
-        <textarea name="description" placeholder="Asset Description"></textarea>
+        <textarea name="description" placeholder="Asset Description" title="Asset Description is required" maxlength="120" required></textarea>
         <br>
         <button type="submit">Create Asset</button>
     </form>

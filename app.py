@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_required, current_user, UserMixin, l
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+import uuid
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -29,13 +30,13 @@ load_dotenv(dotenv_path=env_path)
 @login_manager.user_loader
 def load_user(user_id):
     # user_id is the primary key of the user table, so is used in this query to load the user
-    return User.query.get(int(user_id))
+    return User.query.get((user_id))
 
 
 class User(UserMixin, db.Model):
     def get_id(self):
         return (self.user_id)
-    user_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), primary_key=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
@@ -48,10 +49,10 @@ class User(UserMixin, db.Model):
 
 
 class Asset(UserMixin, db.Model):
-    asset_id = db.Column(db.Integer, primary_key=True)
+    asset_id = db.Column(db.String(50), primary_key=True)
     name = db.Column(db.String(100))
     description = db.Column(db.String(1000))
-    user_id = db.Column(db.Integer, db.ForeignKey(
+    user_id = db.Column(db.String(50), db.ForeignKey(
         "user.user_id"), nullable=False)
 
 
@@ -69,8 +70,7 @@ def register():
         password = request.form['password']
         is_admin = False
         # user_id is randomly assigned a 10 digit user id
-        user_id = ''.join(str(random.randint(0, 9))
-                          for _ in range(10))
+        user_id = str(uuid.uuid4())
 
         # if this returns a user, then the email already exists in database
         user = User.query.filter_by(email=email).first()
@@ -134,7 +134,7 @@ def create_asset():
     return render_template("create_asset.html")
 
 
-@app.route("/edit_asset/<int:user_id>/<int:asset_id>", methods=["GET", "POST"])
+@app.route("/edit_asset/<user_id>/<asset_id>", methods=["GET", "POST"])
 def edit_asset(user_id, asset_id):
     # takes the existing user id and asset id
     user = User.query.get(user_id)
@@ -152,7 +152,7 @@ def edit_asset(user_id, asset_id):
     return render_template("edit_asset.html", user=user, asset=asset)
 
 
-@app.route("/assets/<int:user_id>")
+@app.route("/assets/<user_id>")
 @login_required
 def assets(user_id):
     user = User.query.get(user_id)
@@ -170,7 +170,7 @@ def assets(user_id):
         return "User not found"
 
 
-@app.route("/delete_asset/<int:user_id>/<int:asset_id>", methods=["GET", "POST"])
+@app.route("/delete_asset/<user_id>/<asset_id>", methods=["GET", "POST"])
 @login_required
 def delete_asset(user_id, asset_id):
     user = User.query.get(user_id)
