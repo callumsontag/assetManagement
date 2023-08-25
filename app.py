@@ -68,7 +68,7 @@ def register():
         first_name = request.form['firstName']
         last_name = request.form['lastName']
         password = request.form['password']
-        is_admin = False
+        is_admin = True
         # user_id is randomly assigned a 10 digit user id
         user_id = str(uuid.uuid4())
 

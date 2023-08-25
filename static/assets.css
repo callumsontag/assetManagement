@@ -10,9 +10,9 @@ body{
 
 table { 
     background-color: #FFC9D1;
-	width: 1000px; 
-	margin:50px auto;
-    border-radius: 20px;
+	width: 100%; 
+    margin: 25px auto;
+    border-radius: 50px;
     padding: 40px;
     box-sizing: border-box;
     background: #FFC9D1;
