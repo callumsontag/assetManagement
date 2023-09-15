@@ -40,3 +40,10 @@ class TestApp:
         # check that the logout path takes users back to login
         assert response.status_code == 200
         assert b"Login" in response.data
+        assert b"Don't have an account? " in response.data
+
+    # def test_create_assets_route(self, client):
+
+    # def test_edit_assets_route(self, client):
+
+    # def test_delte_assets_route(self, client):

@@ -16,6 +16,7 @@ document.onreadystatechange = function () {
 };
 
 function onDeleteEventHandler() {
+  console.log("HELLO");
   return confirm("Are you sure you want to delete this asset?");
 }
 
