@@ -1,6 +1,4 @@
-# Project Name
-
-Mettle Asset Management System
+# Mettle Asset Management System
 
 ## Table of Contents
 
