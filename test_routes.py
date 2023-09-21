@@ -1,6 +1,4 @@
-from flask import url_for, request
 from app import db, app
-from flask_login import login_user
 import pytest
 
 
@@ -41,9 +39,3 @@ class TestApp:
         assert response.status_code == 200
         assert b"Login" in response.data
         assert b"Don't have an account? " in response.data
-
-    # def test_create_assets_route(self, client):
-
-    # def test_edit_assets_route(self, client):
-
-    # def test_delte_assets_route(self, client):
