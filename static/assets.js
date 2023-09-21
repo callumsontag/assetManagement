@@ -11,10 +11,11 @@ document.onreadystatechange = function () {
   }
 };
 
+// used to display the confirmation modal when deleting an asset
 function onDeleteEventHandler() {
   return confirm("Are you sure you want to delete this asset?");
 }
-
+// used to display the confirmation modal when logging out
 function onLogoutEventHandler() {
   return confirm("Are you sure you want to Log Out?");
 }
