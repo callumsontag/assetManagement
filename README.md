@@ -27,6 +27,9 @@ An application created by myself for a level 5 degree apprenticeship module 'Sof
 
 https://calson.pythonanywhere.com/
 
+Admin email: admin@mettle.co.uk
+Admin password: adminadmin
+
 ### Installation
 
 Step-by-step instructions on how to install the application
@@ -52,5 +55,5 @@ pip install -r requirements.txt
 Run the application:
 
 ```bash
-python -m flask run 
+python -m flask run
 ```
