@@ -69,7 +69,7 @@ def register():
         last_name = request.form['lastName']
         password = request.form['password']
         is_admin = False
-        # user_id is randomly assigned a 10 digit user id
+        # user_id is randomly assigned a uuid
         user_id = str(uuid.uuid4())
 
         # if this returns a user, then the email already exists in database
@@ -118,7 +118,7 @@ def home():
 @login_required
 def create_asset():
     if request.method == 'POST':
-        # randomly assigned 10 digit asset id
+        # asset_id is randomly assigned a 10 digit id
         asset_id = ''.join(str(random.randint(0, 9)) for _ in range(10))
         name = request.form['name']
         description = request.form['description']
