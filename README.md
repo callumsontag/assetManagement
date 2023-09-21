@@ -6,11 +6,12 @@
 - [Table of Contents](#table-of-contents)
 - [Description](#description)
 - [Features](#features)
+- [Working Example](#working-example)
 - [Installation](#installation)
 
 ## Description
 
-A system to allow Mettle to manage IT assets owned by the company that are being used by employees of the business. This allows the company to keep track of valuable assets but carries the ethos of the company which gives responsibility to each employee.
+An application created by myself for a level 5 degree apprenticeship module 'Software Engineering and Agile'. The idea of the application is to allow Mettle to manage IT assets owned by the company that are being used by employees of the business. This allows the company to keep track of valuable IT assets but carries the ethos of the business which is to give responsibility to each employee. This can also help in scenarios wherby certain devices may be needed to test certain aspects of other Mettle applications, and this system can be used to find out who has the required device.
 
 ## Features
 
@@ -22,7 +23,9 @@ A system to allow Mettle to manage IT assets owned by the company that are being
 - Delete Assets - Admin users are able to delete any users assets, a modal will present to confirm the deletion.
 - Log Out - Modal will be presented to confirm log out. Session cookie token will be deleted upon log out so secure pages cannot be accessed.
 
-...
+## Working Example
+
+https://calson.pythonanywhere.com/
 
 ### Installation
 
