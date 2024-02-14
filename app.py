@@ -22,6 +22,7 @@ login_manager.init_app(app)
 
 db = SQLAlchemy(app)
 
+
 load_dotenv()
 env_path = Path('.')/'.env'
 load_dotenv(dotenv_path=env_path)
@@ -135,12 +136,13 @@ def create_asset():
 
 
 @app.route("/edit_asset/<user_id>/<asset_id>", methods=["GET", "POST"])
+@login_required
 def edit_asset(user_id, asset_id):
     # takes the existing user id and asset id
     user = User.query.get(user_id)
     asset = Asset.query.get(asset_id)
 
-    if user and asset:
+    if user == current_user and asset:
         if request.method == "POST":
             asset.name = request.form["new_asset_name"]
             asset.description = request.form["new_asset_description"]
@@ -156,8 +158,10 @@ def edit_asset(user_id, asset_id):
 @login_required
 def assets(user_id):
     user = User.query.get(user_id)
-
-    if user:
+    print(current_user)
+    print(User.query.get(user_id))
+    # ensures users can only view their own assets
+    if user and user == current_user:
         # if user is admin then return all user assets
         if current_user.is_admin:
             assets = Asset.query.all()
@@ -167,7 +171,7 @@ def assets(user_id):
             assets = user.assets
             return render_template('assets.html', user=user, assets=assets)
     else:
-        return "User not found"
+        return "Invalid permissions or user not found"
 
 
 @app.route("/delete_asset/<user_id>/<asset_id>", methods=["GET", "POST"])
@@ -177,7 +181,7 @@ def delete_asset(user_id, asset_id):
     asset = Asset.query.get(asset_id)
 
     # checks that the user is an admin, as only admins can delete assets
-    if user and asset and current_user.is_admin:
+    if user == current_user and asset and current_user.is_admin:
         db.session.delete(asset)
         db.session.commit()
         return redirect(url_for('assets', user_id=user_id))
