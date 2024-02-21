@@ -58,4 +58,4 @@ jobs:
           curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -d "branch=main" \
           -d "commit_id=${{ github.sha }}" \
-          https://api.render.com/v1/render/github/checkouts/${{ secrets.RENDER_SERVICE_ID }}/builds
+          https://api.render.com/v1/render/github/checkouts/srv-cn6cq0icn0vc73dca7p0/builds
