@@ -33,59 +33,46 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Test with pytest
+      - name: test
         run: |
           pytest
-  services:
-  - type: web
-    name: flask-app
-    env: docker
-    dockerfilePath: ./Dockerfile
-    image: callumsontag/flask-app:latest
-    port: 5000
-    plan: starter
-    startCommand: gunicorn app:app
 
-jobs:
-  
   deploy:
-    needs: test # only run after test job succeeds
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
-              uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Download render.yaml
-              uses: actions/download-artifact@v2
-              with:
-                name: render.yaml
+        uses: actions/download-artifact@v2
+        with:
+          name: render.yaml
 
       - name: Log in to Docker Hub
-              uses: docker/login-action@v1
-              with:
-                username: ${{ secrets.DOCKER_USERNAME }}
-                password: ${{ secrets.DOCKER_PASSWORD }}
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push image
-              uses: docker/build-push-action@v2
-              with:
-                context: .
-                file: ./Dockerfile
-                push: true
-                tags: callumsontag/flask-app:latest
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: callumsontag/flask-app:latest
 
       - name: Log in to Render
-              uses: render-cli/login-action@v1
-              with:
-                email: ${{ secrets.RENDER_EMAIL }}
-                token: ${{ secrets.RENDER_API_KEY }}
+        uses: render-cli/login-action@v1
+        with:
+          email: ${{ secrets.RENDER_EMAIL }}
+          token: ${{ secrets.RENDER_API_KEY }}
 
       - name: Deploy to Render
-              uses: render-cli/deploy-action@v1
-              with:
-                file: render.yaml
-  
-  
+        uses: render-cli/deploy-action@v1
+        with:
+          file: render.yaml
   # deploy:
   # runs-on: ubuntu-latest
   # steps:
