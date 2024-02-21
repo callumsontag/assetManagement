@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: flask-app
-    env: docker
-    dockerfilePath: ./Dockerfile
-    image: callumsontag/flask-app:latest
-    port: 5000
-    plan: starter
-    startCommand: gunicorn app:app
