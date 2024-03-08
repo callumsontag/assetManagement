@@ -44,6 +44,9 @@
     </table>
     <a href="{{ url_for('create_asset') }}">Create an Asset</a>
     <br>
+    {% if current_user.is_admin %}
+    <a href="{{ url_for('admin_view', user_id=current_user.user_id) }}">Admin View</a>
+    {% endif %}
     <br>
     <a href="{{ url_for('logout') }}" id="logoutButton">Log Out</a>
 </body>

@@ -3,9 +3,11 @@ import os
 import random
 from flask import Flask, flash, render_template, redirect, url_for, request
 from flask_login import LoginManager, login_required, current_user, UserMixin, login_user, logout_user
+from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+import logging
 import uuid
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -22,6 +24,16 @@ login_manager.init_app(app)
 
 db = SQLAlchemy(app)
 
+# Configures logging
+# logging.basicConfig(filename='app.log', level=logging.ERROR,
+#                     format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger('app')
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler = logging.FileHandler('.app.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 load_dotenv()
 env_path = Path('.')/'.env'
@@ -43,6 +55,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(100))
     password = db.Column(db.String(100), nullable=False)
     is_admin = db.Column(db.Integer, default=0)
+    attempted_logins = db.Column(db.Integer, default=0)
     # assets doesn't direct show on the User table itself but it represents the relationship
     # between the User and Assets Models, and allows the access
     # of the related Asset records associated with a particular user
@@ -64,54 +77,67 @@ def homepage():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        email = request.form['email']
-        first_name = request.form['firstName']
-        last_name = request.form['lastName']
-        password = request.form['password']
-        is_admin = False
-        # user_id is randomly assigned a uuid
-        user_id = str(uuid.uuid4())
+    try:
+        if request.method == 'POST':
+            email = request.form['email']
+            first_name = request.form['firstName']
+            last_name = request.form['lastName']
+            password = request.form['password']
+            is_admin = False
+            # user_id is randomly assigned a uuid
+            user_id = str(uuid.uuid4())
 
-        # if this returns a user, then the email already exists in database
-        user = User.query.filter_by(email=email).first()
+            # if this returns a user, then the email already exists in database
+            user = User.query.filter_by(email=email).first()
 
-        if user:  # if a user is found, this redirects user back to register page so user can try again
-            flash('Email address ia already in use')
-            return redirect(url_for('register'))
+            if user:  # if a user is found, this redirects user back to register page so user can try again
+                flash('An error occured during registration')
+                logger.error(
+                    'Registration attempted with email address already in use: %s', str(email))
+                return redirect(url_for('register'))
 
-        new_user = User(email=email, first_name=first_name, last_name=last_name, is_admin=is_admin, user_id=user_id,
-                        password=generate_password_hash(password, method='sha256'))
+            new_user = User(email=email, first_name=first_name, last_name=last_name, is_admin=is_admin, user_id=user_id,
+                            password=generate_password_hash(password, method='sha256'))
 
-        # adds the new user to the database with a sha256 hashed password
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('login'))
+            # adds the new user to the database with a sha256 hashed password
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for('login'))
+    except Exception as e:
+        logger.error('An error occurred at register: %s', str(e))
     return render_template('register.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+    try:
+        if request.method == 'POST':
+            email = request.form['email']
+            password = request.form['password']
 
-        user = User.query.filter_by(email=email).first()
+            user = User.query.filter_by(email=email).first()
 
-        # take the user-supplied password, hash it, and compare it to the hashed password in the database
-        if not user or not check_password_hash(user.password, password):
-            flash('Please check your login details and try again.')
-            # if the user doesn't exist or password is wrong, renders the page with the previously entered email stored in the form
-            return render_template('login.html', email=email)
+            # take the user-supplied password, hash it, and compare it to the hashed password in the database
+            if not user or not check_password_hash(user.password, password) or user.attempted_logins >= 5:
+                flash('Please check your login details and try again.')
+                user.attempted_logins += 1
+                db.session.commit()
+                logger.error('Invalid login attempt: %s', str(email))
+                # if the user doesn't exist or password is wrong, renders the page with the previously entered email stored in the form
+                return render_template('login.html', email=email)
 
-        # if the above check passes, then we know the user has the right credentials and the user is taken to their assets page
-        login_user(user)
-        return redirect(url_for('assets', user_id=current_user.user_id))
+            # if the above check passes, then we know the user has the right credentials and the user is taken to their assets page
+            login_user(user)
+
+            return redirect(url_for('assets', user_id=current_user.user_id))
+    except Exception as e:
+        logger.error('An error occurred at login: %s', str(e))
     return render_template('login.html', email="")
 
 
 @app.route('/home', methods=['GET', 'POST'])
 def home():
+    db.create_all()
     return render_template("home.html")
 
 
@@ -150,7 +176,7 @@ def edit_asset(user_id, asset_id):
             db.session.commit()
             return redirect(url_for('assets', user_id=user_id))
     else:
-        return "User or asset not found"
+        return "Invalid permissions"
     return render_template("edit_asset.html", user=user, asset=asset)
 
 
@@ -158,8 +184,6 @@ def edit_asset(user_id, asset_id):
 @login_required
 def assets(user_id):
     user = User.query.get(user_id)
-    print(current_user)
-    print(User.query.get(user_id))
     # ensures users can only view their own assets
     if user and user == current_user:
         # if user is admin then return all user assets
@@ -171,7 +195,7 @@ def assets(user_id):
             assets = user.assets
             return render_template('assets.html', user=user, assets=assets)
     else:
-        return "Invalid permissions or user not found"
+        return "Invalid permissions"
 
 
 @app.route("/delete_asset/<user_id>/<asset_id>", methods=["GET", "POST"])
@@ -186,7 +210,38 @@ def delete_asset(user_id, asset_id):
         db.session.commit()
         return redirect(url_for('assets', user_id=user_id))
     else:
-        return "Access denied, only admins can delete assets"
+        logger.error(
+            'Attempted delete assets request without permissions: %s', str(current_user))
+        return "Access denied"
+
+
+@app.route("/admin_view/<user_id>/", methods=["GET", "POST"])
+@login_required
+def admin_view(user_id):
+    user = User.query.get(user_id)
+    # checks that the user is an admin, as only admins can view all users
+    if user == current_user and current_user.is_admin:
+        users = User.query.all()
+        return render_template('admin_view.html', user=user, users=users)
+    else:
+        logger.error(
+            'Attempted admin view access without permissions: %s', str(current_user))
+        return "Access denied"
+
+
+@app.route("/reset_login/<user_id>", methods=["GET", "POST"])
+@login_required
+def reset_login(user_id):
+    # checks that the user is an admin, as only admins can delete assets
+    if current_user.is_admin:
+        user = User.query.get(user_id)
+        user.attempted_logins = 0
+        db.session.commit()
+        return redirect(url_for('admin_view', user_id=current_user.user_id))
+    else:
+        logger.error(
+            'Attempted reset login attemps without permissions: %s', str(current_user))
+        return "Access denied"
 
 
 @app.route("/logout")

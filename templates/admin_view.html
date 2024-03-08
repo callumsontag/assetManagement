@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Users</title>
+    <link rel="stylesheet" href="/static/assets.css">
+    <script src="/static/assets.js"></script>
+</head>
+<body>
+    <h1>Admin View</h1>
+    <h3>Welcome {{ current_user.first_name }}, these are all registered users</h3>
+    <table class="assets-table">
+        <tr>
+            <th>User Name</th>
+            <th>User Email</th>
+            <th>User ID</th>
+            <th>Is User Admin</th>
+            <th>Failed Login Attempts</th>
+            <th>Reset Login Attemps</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.user_id }}</td>
+            <td>{{ user.is_admin }}</td>
+            <td>{{ user.attempted_logins }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('reset_login', user_id=user.user_id) }}" class="resetLogin">
+                    <button>Reset Login Attempts</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('home') }}">Home</a>
+    <br>
+    <a href="{{ url_for('logout') }}" id="logoutButton">Log Out</a>
+</body>
+</html>
