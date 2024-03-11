@@ -27,7 +27,7 @@ An application created by myself for a degree apprenticeship module. The idea of
 
 ## Working Example
 
-https://calson.pythonanywhere.com/
+https://assetmanagement-4rpv.onrender.com
 
 Admin email: admin@mettle.co.uk
 Admin password: adminadmin
