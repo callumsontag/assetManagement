@@ -7,12 +7,18 @@
 <body>
     <div class="container">
     <div class="title">Create Asset</div>
-    <form method="POST" action="{{ url_for('create_asset') }}">
-        <input type="text" name="name" placeholder="Asset Name" title="Asset name is required" maxlength="20" required>
+    <form method="POST">
+        {{ form.csrf_token }}
+        <!-- <input type="text" name="name" placeholder="Asset Name" title="Asset name is required" maxlength="20" required>
         <br>
         <textarea name="description" placeholder="Asset Description" title="Asset Description is required" maxlength="120" required></textarea>
         <br>
-        <button type="submit">Create Asset</button>
+        <button type="submit">Create Asset</button> -->
+        <p>{{ form.asset(size=32, placeholder='Asset Name') }}</p>
+        <br>
+        <p>{{ form.assetDescription(size=48, placeholder='Asset Description') }}</p>
+        <br>
+        <p>{{ form.submit() }}</p>
     </form>
     <br>
     <div id="asset_created">

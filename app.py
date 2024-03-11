@@ -7,6 +7,7 @@ from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from forms import RegisterForm, LoginForm, AssetForm
 import logging
 import uuid
 
@@ -77,12 +78,13 @@ def homepage():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    form = RegisterForm()
     try:
-        if request.method == 'POST':
-            email = request.form['email']
-            first_name = request.form['firstName']
-            last_name = request.form['lastName']
-            password = request.form['password']
+        if form.validate_on_submit():
+            email = form.email.data
+            first_name = form.firstName.data
+            last_name = form.lastName.data
+            password = form.password.data
             is_admin = False
             # user_id is randomly assigned a uuid
             user_id = str(uuid.uuid4())
@@ -96,8 +98,12 @@ def register():
                     'Registration attempted with email address already in use: %s', str(email))
                 return redirect(url_for('register'))
 
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(error, 'error')
+
             new_user = User(email=email, first_name=first_name, last_name=last_name, is_admin=is_admin, user_id=user_id,
-                            password=generate_password_hash(password, method='sha256'))
+                            password=generate_password_hash(password, method='pbkdf2:sha256', salt_length=8))
 
             # adds the new user to the database with a sha256 hashed password
             db.session.add(new_user)
@@ -105,15 +111,16 @@ def register():
             return redirect(url_for('login'))
     except Exception as e:
         logger.error('An error occurred at register: %s', str(e))
-    return render_template('register.html')
+    return render_template('register.html', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    form = LoginForm()
     try:
-        if request.method == 'POST':
-            email = request.form['email']
-            password = request.form['password']
+        if form.validate_on_submit():
+            email = form.email.data
+            password = form.password.data
 
             user = User.query.filter_by(email=email).first()
 
@@ -132,7 +139,7 @@ def login():
             return redirect(url_for('assets', user_id=current_user.user_id))
     except Exception as e:
         logger.error('An error occurred at login: %s', str(e))
-    return render_template('login.html', email="")
+    return render_template('login.html', email="", form=form)
 
 
 @app.route('/home', methods=['GET', 'POST'])
@@ -144,11 +151,12 @@ def home():
 @app.route("/create_asset", methods=['GET', 'POST'])
 @login_required
 def create_asset():
-    if request.method == 'POST':
+    form = AssetForm()
+    if form.validate_on_submit():
         # asset_id is randomly assigned a 10 digit id
         asset_id = ''.join(str(random.randint(0, 9)) for _ in range(10))
-        name = request.form['name']
-        description = request.form['description']
+        name = form.asset.data
+        description = form.assetDescription.data
         user_id = current_user.get_id()
         # adding a new asset to the asset database
         new_asset = Asset(asset_id=asset_id, name=name,
@@ -157,8 +165,7 @@ def create_asset():
         db.session.add(new_asset)
         db.session.commit()
         flash('Asset created successfully!')
-        print(new_asset)
-    return render_template("create_asset.html")
+    return render_template("create_asset.html", form=form)
 
 
 @app.route("/edit_asset/<user_id>/<asset_id>", methods=["GET", "POST"])
@@ -167,17 +174,18 @@ def edit_asset(user_id, asset_id):
     # takes the existing user id and asset id
     user = User.query.get(user_id)
     asset = Asset.query.get(asset_id)
+    form = AssetForm(obj=asset)
 
     if user == current_user and asset:
-        if request.method == "POST":
-            asset.name = request.form["new_asset_name"]
-            asset.description = request.form["new_asset_description"]
+        if form.validate_on_submit():
+            asset.name = form.asset.data
+            asset.description = form.assetDescription.data
             # replaces the existing assets name and description
             db.session.commit()
             return redirect(url_for('assets', user_id=user_id))
     else:
         return "Invalid permissions"
-    return render_template("edit_asset.html", user=user, asset=asset)
+    return render_template("edit_asset.html", user=user, asset=asset, form=form)
 
 
 @app.route("/assets/<user_id>")

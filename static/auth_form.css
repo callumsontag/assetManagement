@@ -61,7 +61,7 @@ input {
     margin-bottom: 10px;
   }
   
-button {
+.submit {
     color: #171B1B;
     margin-top: 20px;
     background: #FFC9D1;
@@ -73,11 +73,11 @@ button {
     transition: 0.5s;
   }
   
-button:hover {
+.submit:hover {
     box-shadow: none;
   }
 
-#error {
+.error {
   color: red;
 }
 

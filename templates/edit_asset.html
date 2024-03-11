@@ -8,11 +8,17 @@
     <div class="container">
     <div class="title">Edit Asset</div>
     <form method="POST" action="{{ url_for('edit_asset', user_id=user.user_id, asset_id=asset.asset_id)}}">
-        <input type="text" name="new_asset_name" placeholder="New Asset Name" value="{{ asset['name'] }}" maxlength="20" required>
+        <!-- <input type="text" name="new_asset_name" placeholder="New Asset Name" value="{{ asset['name'] }}" maxlength="20" required>
         <br>
         <textarea name="new_asset_description" placeholder="New Asset Description" maxlength="120" required>{{ asset['description'] }}</textarea>
         <br>
-        <button type="submit">Update Asset</button>
+        <button type="submit">Update Asset</button> -->
+        {{ form.csrf_token }}
+        <p>{{ form.asset(size=32) }}</p>
+        <br>
+        <p>{{ form.assetDescription(size=48) }}</p>
+        <br>
+        <p>{{ form.submit() }}</p>
     </form>
     <br>
     <a href="{{ url_for('assets', user_id=current_user.user_id) }}">Back to Assets</a>
