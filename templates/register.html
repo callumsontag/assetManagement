@@ -8,11 +8,6 @@
     <div class="container">
     <div class="title">Register</div>
     <form method="POST">
-        <!-- <input type="email" name="email" placeholder="Email" title="Please register with mettle email address" pattern=".+@mettle\.co\.uk" required> must register with @mettle.co.uk email address -->
-        <!-- <input type="password" name="password" placeholder="Password" minlength="6" required>
-        <input name="firstName" placeholder="First Name" required>
-        <input name="lastName" placeholder="Last Name" required>
-        <button type="submit">Register</button>  -->
         {{ form.csrf_token }}
         <p>{{ form.email(size=32, placeholder='Email') }}</p>
     {% for error in form.email.errors %}

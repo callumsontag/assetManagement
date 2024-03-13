@@ -6,7 +6,8 @@ from flask_login import LoginManager, login_required, current_user, UserMixin, l
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
-from flask_talisman import Talisman, GOOGLE_CSP_POLICY
+from flask_talisman import Talisman
+from markupsafe import escape
 from forms import RegisterForm, LoginForm, AssetForm
 import logging
 import uuid
@@ -19,8 +20,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
-talisman = Talisman(app, content_security_policy=GOOGLE_CSP_POLICY)
+# Configures content security policy
+talisman = Talisman(app)
 
+# Configures login
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
@@ -36,6 +39,7 @@ file_handler = logging.FileHandler('.app.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
+# Configures env variables
 load_dotenv()
 env_path = Path('.')/'.env'
 load_dotenv(dotenv_path=env_path)
@@ -81,10 +85,10 @@ def register():
     form = RegisterForm()
     try:
         if form.validate_on_submit():
-            email = form.email.data
-            first_name = form.firstName.data
-            last_name = form.lastName.data
-            password = form.password.data
+            email = escape(form.email.data)
+            first_name = escape(form.firstName.data)
+            last_name = escape(form.lastName.data)
+            password = escape(form.password.data)
             is_admin = False
             # user_id is randomly assigned a uuid
             user_id = str(uuid.uuid4())
@@ -117,28 +121,24 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    try:
-        if form.validate_on_submit():
-            email = form.email.data
-            password = form.password.data
+    if form.validate_on_submit():
+        email = escape(form.email.data)
+        password = escape(form.password.data)
 
-            user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
-            # take the user-supplied password, hash it, and compare it to the hashed password in the database
-            if not user or not check_password_hash(user.password, password) or user.attempted_logins >= 5:
-                flash('Please check your login details and try again.')
-                user.attempted_logins += 1
-                db.session.commit()
-                logger.error('Invalid login attempt: %s', str(email))
-                # if the user doesn't exist or password is wrong, renders the page with the previously entered email stored in the form
-                return render_template('login.html', email=email)
+        # take the user-supplied password, hash it, and compare it to the hashed password in the database
+        if not user or not check_password_hash(user.password, password) or user.attempted_logins >= 5:
+            user.attempted_logins += 1
+            db.session.commit()
+            logger.error('Invalid login attempt: %s', str(email))
+            flash('Please check your login details and try again.')
+            # if the user doesn't exist or password is wrong, renders the page with the previously entered email stored in the form
+            return render_template('login.html', email=email)
 
-            # if the above check passes, then we know the user has the right credentials and the user is taken to their assets page
-            login_user(user)
-
-            return redirect(url_for('assets', user_id=current_user.user_id))
-    except Exception as e:
-        logger.error('An error occurred at login: %s', str(e))
+        # if the above check passes, then we know the user has the right credentials and the user is taken to their assets page
+        login_user(user)
+        return redirect(url_for('assets', user_id=current_user.user_id))
     return render_template('login.html', email="", form=form)
 
 
@@ -155,8 +155,8 @@ def create_asset():
     if form.validate_on_submit():
         # asset_id is randomly assigned a 10 digit id
         asset_id = ''.join(str(random.randint(0, 9)) for _ in range(10))
-        name = form.asset.data
-        description = form.assetDescription.data
+        name = escape(form.asset.data)
+        description = escape(form.assetDescription.data)
         user_id = current_user.get_id()
         # adding a new asset to the asset database
         new_asset = Asset(asset_id=asset_id, name=name,
@@ -178,8 +178,8 @@ def edit_asset(user_id, asset_id):
 
     if user == current_user and asset:
         if form.validate_on_submit():
-            asset.name = form.asset.data
-            asset.description = form.assetDescription.data
+            asset.name = escape(form.asset.data)
+            asset.description = escape(form.assetDescription.data)
             # replaces the existing assets name and description
             db.session.commit()
             return redirect(url_for('assets', user_id=user_id))

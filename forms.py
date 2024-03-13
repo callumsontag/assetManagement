@@ -3,6 +3,21 @@ from wtforms import StringField, SubmitField, PasswordField, TextAreaField, Vali
 from wtforms.validators import DataRequired, Email
 
 
+class SpecialCharacterNotAllowedValidator:
+    # list of disallowed characters here
+    denylist = [';', "'", '"', '\\', '--', '/*', '*/', '%', '_', '\x00-\x1F',
+                '..', '<', '>', '&', '=', '|', '&', ';', '$', '`', '(', ')']
+
+    def __init__(self, message=None):
+        if not message:
+            message = 'Field cannot contain certain special characters'
+        self.message = message
+
+    def __call__(self, form, field):
+        if any(char in field.data for char in self.denylist):
+            raise ValidationError(self.message)
+
+
 class CustomEmailValidation:
     def __call__(self, form, field):
         if not field.data.endswith('@mettle.co.uk'):
@@ -37,22 +52,27 @@ class SecurePasswordValidator:
 
 class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[
-                        DataRequired(), Email(), CustomEmailValidation()])
+                        DataRequired(), Email(), CustomEmailValidation(), SpecialCharacterNotAllowedValidator()])
     password = PasswordField('Password', validators=[
-                             DataRequired(), SecurePasswordValidator()])
-    firstName = StringField('FirstName', validators=[DataRequired()])
-    lastName = StringField('LastName', validators=[DataRequired()])
+                             DataRequired(), SecurePasswordValidator(), SpecialCharacterNotAllowedValidator()])
+    firstName = StringField('FirstName', validators=[
+                            DataRequired(), SpecialCharacterNotAllowedValidator()])
+    lastName = StringField('LastName', validators=[
+                           DataRequired(), SpecialCharacterNotAllowedValidator()])
     submit = SubmitField('Register')
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Name', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    email = StringField('Name', validators=[DataRequired(
+    ), Email(), SpecialCharacterNotAllowedValidator()])
+    password = PasswordField('Password', validators=[
+                             DataRequired(), SpecialCharacterNotAllowedValidator()])
     submit = SubmitField('Submit')
 
 
 class AssetForm(FlaskForm):
-    asset = StringField('Asset', validators=[DataRequired()])
+    asset = StringField('Asset', validators=[
+                        DataRequired(), SpecialCharacterNotAllowedValidator()])
     assetDescription = TextAreaField(
-        'AssetDescription', validators=[DataRequired()])
+        'AssetDescription', validators=[DataRequired(), SpecialCharacterNotAllowedValidator()])
     submit = SubmitField('Submit')
