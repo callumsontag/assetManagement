@@ -6,7 +6,7 @@ from flask_login import LoginManager, login_required, current_user, UserMixin, l
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
-from flask_talisman import Talisman
+from flask_talisman import Talisman, GOOGLE_CSP_POLICY
 from forms import RegisterForm, LoginForm, AssetForm
 import logging
 import uuid
@@ -18,29 +18,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
     'sqlite:///' + os.path.join(basedir, 'assetManagementDatabase.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-talisman = Talisman(app)
 
-csp = {
-    'default-src': [
-        '\'self\'',
-    ]
-}
-# HTTP Strict Transport Security (HSTS) Header
-hsts = {
-    'max-age': 31536000,
-    'includeSubDomains': True
-}
-# Enforce HTTPS and other headers
-talisman.force_https = True
-talisman.force_file_save = True
-talisman.x_xss_protection = True
-talisman.session_cookie_secure = True
-talisman.session_cookie_samesite = 'Lax'
-talisman.frame_options_allow_from = 'https://www.google.com'
-
-# Add the headers to Talisman
-talisman.content_security_policy = csp
-talisman.strict_transport_security = hsts
+talisman = Talisman(app, content_security_policy=GOOGLE_CSP_POLICY)
 
 login_manager = LoginManager()
 login_manager.login_view = 'login'
@@ -49,8 +28,6 @@ login_manager.init_app(app)
 db = SQLAlchemy(app)
 
 # Configures logging
-# logging.basicConfig(filename='app.log', level=logging.ERROR,
-#                     format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('app')
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter(

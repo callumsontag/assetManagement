@@ -6,6 +6,7 @@ class TestApp:
     @pytest.fixture
     def client(self):
         app.config['TESTING'] = True
+        app.config['DEBUG'] = True
         app.secret_key = '12345'
         with app.test_client() as client:
             with app.app_context():
