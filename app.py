@@ -21,7 +21,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 # Configures content security policy
-talisman = Talisman(app)
+csp = {
+    'default-src': '\'self\'',
+    'script-src': '\'self\'',
+    'style-src': '\'self\'',
+    'img-src': '\'self\'',
+    'font-src': '\'self\'',
+    'object-src': '\'none\'',
+}
+
+talisman = Talisman(app, content_security_policy=csp)
 
 # Configures login
 login_manager = LoginManager()
