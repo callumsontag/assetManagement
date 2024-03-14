@@ -28,6 +28,8 @@ csp = {
     'img-src': '\'self\'',
     'font-src': '\'self\'',
     'object-src': '\'none\'',
+    'frame-ancestors': '\'self\'',
+    'form-action': '\'self\'',
 }
 
 talisman = Talisman(app, content_security_policy=csp)
