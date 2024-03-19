@@ -139,17 +139,21 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         # take the user-supplied password, hash it, and compare it to the hashed password in the database
-        if not user or not check_password_hash(user.password, password) or user.attempted_logins >= 5:
-            user.attempted_logins += 1
-            db.session.commit()
-            logger.error('Invalid login attempt: %s', str(email, user))
+        if user:
+            if check_password_hash(user.password, password) and user.attempted_logins < 5:
+                login_user(user)
+                return redirect(url_for('assets', user_id=current_user.user_id))
+            else:
+                user.attempted_logins += 1
+                db.session.commit()
+                logger.error('Invalid login attempt for registered user: %s',
+                             str(email))
+                flash('Please check your login details and try again.')
+                # if the password is wrong or failed attempted logins exceed 5, renders the page with the previously entered email stored in the form
+                return render_template('login.html', email=email, form=form)
+        else:
+            logger.error('Invalid login attempt: %s', str(email))
             flash('Please check your login details and try again.')
-            # if the user doesn't exist or password is wrong, renders the page with the previously entered email stored in the form
-            return render_template('login.html', email=email)
-
-        # if the above check passes, then we know the user has the right credentials and the user is taken to their assets page
-        login_user(user)
-        return redirect(url_for('assets', user_id=current_user.user_id))
     return render_template('login.html', email="", form=form)
 
 

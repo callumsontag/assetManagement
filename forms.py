@@ -10,7 +10,7 @@ class SpecialCharacterNotAllowedValidator:
 
     def __init__(self, message=None):
         if not message:
-            message = 'Field cannot contain certain special characters'
+            message = '\nField cannot contain certain special characters'
         self.message = message
 
     def __call__(self, form, field):
@@ -21,7 +21,8 @@ class SpecialCharacterNotAllowedValidator:
 class CustomEmailValidation:
     def __call__(self, form, field):
         if not field.data.endswith('@mettle.co.uk'):
-            raise ValidationError('Email address must be @mettle.co.uk')
+            raise ValidationError(
+                'Email address must be the company email address')
 
 
 class SecurePasswordValidator:
