@@ -142,7 +142,7 @@ def login():
         if not user or not check_password_hash(user.password, password) or user.attempted_logins >= 5:
             user.attempted_logins += 1
             db.session.commit()
-            logger.error('Invalid login attempt: %s', str(email))
+            logger.error('Invalid login attempt: %s', str(email, user))
             flash('Please check your login details and try again.')
             # if the user doesn't exist or password is wrong, renders the page with the previously entered email stored in the form
             return render_template('login.html', email=email)
@@ -176,6 +176,7 @@ def create_asset():
         db.session.add(new_asset)
         db.session.commit()
         flash('Asset created successfully!')
+    logger.error('Error creating asset: %s', str(form))
     return render_template("create_asset.html", form=form)
 
 
@@ -195,6 +196,8 @@ def edit_asset(user_id, asset_id):
             db.session.commit()
             return redirect(url_for('assets', user_id=user_id))
     else:
+        logger.error('User attempted edit on another user: %s',
+                     str(current_user, asset))
         return "Invalid permissions"
     return render_template("edit_asset.html", user=user, asset=asset, form=form)
 
@@ -214,6 +217,8 @@ def assets(user_id):
             assets = user.assets
             return render_template('assets.html', user=user, assets=assets)
     else:
+        logger.error('User attempted to view another users assets: %s',
+                     str(current_user))
         return "Invalid permissions"
 
 

@@ -18,7 +18,13 @@
         <span class="error">{{ error }}</span>
     {% endfor %}
         <p>{{ form.firstName(size=32, placeholder='First Name') }}</p>
+    {% for error in form.firstName.errors %}
+        <span class="error">{{ error }}</span>
+    {% endfor %}
         <p>{{ form.lastName(size=32, placeholder='Last Name') }}</p>
+    {% for error in form.lastName.errors %}
+        <span class="error">{{ error }}</span>
+    {% endfor %}
         <p class="submit">{{ form.submit() }}</p>
     </form>
     {% with messages = get_flashed_messages() %}
