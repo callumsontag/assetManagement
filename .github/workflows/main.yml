@@ -42,7 +42,11 @@ jobs:
     needs: build
     if: success()
 
-    steps:          
+    steps:
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt 
+          
       - name: Automated tests with pytest
         run: |
           pytest
